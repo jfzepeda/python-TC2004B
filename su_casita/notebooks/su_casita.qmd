@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+format: 
+    html:
+        output-file: "Proyecto Su Casita"
+        toc: true
+        html-math-method: katex
+        embed-resources: true
+        self-contained-math: true
+        df-print: kable
+---
+
+## Fase I : Entendimiento del negocio 
+
+🎯 **Objetivo** : Estimar precios de viviendas de Sacramento. 
+
+![](../figures/vivienda.jpeg){fig-align ='center' width = "300"}
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+```
+
+```{python}
+df=pd.read_csv("../data/sacramento.csv")
+df.head()
+```
+
+```{python}
+df["type"].value_counts(normalize=True)
+```
+
+```{python}
+pd.crosstab(df["zip"], df["type"])
+```
+
+```{python}
+df.describe()
+```

@@ -1,0 +1,124 @@
+---
+title: "Untitled"
+format: 
+    html:
+        output-file: "Proyecto Su Casita"
+        toc: true
+        html-math-method: katex
+        embed-resources: true
+        self-contained-math: true
+        df-print: kable
+---
+
+## Fase I : Entendimiento del negocio 
+
+🎯 **Objetivo** : Estimar precios de viviendas de Sacramento. 
+
+![](../figures/vivienda.jpeg){fig-align ='center' width = "300"}
+
+## Fase 2: Entendimiento de los datos
+
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+```{python}
+# Cargar el dataset
+data = pd.read_csv('../data/sacramento.csv')
+data.head()
+```
+
+```{python}# Información general del dataset
+data.info()
+```
+
+```{python}
+data['type'].value_counts(normalize=True)
+```
+
+```{python}
+pd.crosstab(data['zip'], data['type'])
+```
+
+```{python}
+data.describe()
+```
+
+```{python}
+%run ../scripts/funciones.py
+
+help(create_train_test)
+
+```
+
+```{python}
+train_set, test_set = create_train_test(data, test_ratio=0.3, seed=42)
+train_set.head()
+test_set.head()
+```
+
+```{python}
+from sklearn.model_selection import train_test_split
+train_set, test_set = train_test_split(data, test_size=0.3, random_state=42)
+
+train_set.head()
+test_set.head()
+```
+
+```{python}
+sns.histplot(data, x='price')
+plt.show()
+```
+
+```{python}
+price_cuts = np.quantile(data['price'], [0.2, 0.4, 0.6, 0.8])
+```
+
+```{python}
+data['price_cat'] = pd.cut(data['price'], bins=[-np.inf,price_cuts[0], price_cuts[1], price_cuts[2], price_cuts[3], np.inf], labels=[1, 2, 3, 4, 5])
+```
+
+```{python}
+data["price_cat"].value_counts(normalize = True).sort_index().plot.bar(rot = 0, color = "dodgerblue")
+plt.xlabel("Categoría de precio")
+plt.ylabel("Proporción")
+plt.title("Bar chart del precio discretizado")
+plt.show()
+```
+
+```{python}
+strat_train, strat_test = create_train_test(data, test_size = 0.3, stratify = data['price_cat'], random_state = 1234)
+
+strat_test['price_cat'].value_counts(normalize=True).sort_values()
+```
+
+
+```{python}
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (9, 4))
+
+## Histograma en el training set
+sns.histplot(strat_train, x = "price", ax = ax1, bins = 18,
+             color = "dodgerblue", stat = "density")
+sns.kdeplot(strat_train["price"], ax = ax1,
+            color = "black", linewidth = 2)
+ax1.set_title("Histograma del precio de vivienda")
+ax1.set_xlabel("Precio ($)")
+ax1.set_ylabel("Densidad")
+
+## Histograma en el test set
+sns.histplot(strat_test, x = "price", ax = ax2, bins = 18,
+             color = "dodgerblue", stat = "density")
+sns.kdeplot(strat_test["price"], ax = ax2,
+            color = "black", linewidth = 2)
+ax2.set_title("Histograma del precio de vivienda")
+ax2.set_xlabel("Precio ($)")
+ax2.set_ylabel("Densidad")
+plt.show();
+```
+
+```{python}
+for set_ in (strat_train, strat_test):
+    set_.drop(columns = 'price_cat', inplace = True)

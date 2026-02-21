@@ -1,0 +1,28 @@
+## Build tools
+wheel
+
+# Core Quarto/Jupyter
+jupyter
+ipywidgets
+nbconvert
+ipykernel
+nbformat
+nbclient
+
+## Settings
+pyyaml
+
+## Data science core
+numpy
+pandas
+scikit-learn
+scipy
+statsmodels
+
+## Visualization
+matplotlib
+seaborn
+plotly
+
+## Machine learning special
+xgboost

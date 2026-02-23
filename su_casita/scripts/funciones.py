@@ -25,17 +25,20 @@ def create_train_test(data, test_ratio, seed):
 
     ## Creamos un arreglo con las posiciones de
     ## los datos seleccionadas de forma aleatoria
-    idx = np.random.choice(len(data), size = len(data), replace = False)
+    idx = np.random.choice(len(data), size=len(data), replace=False)
     
 
     ## Determinamos cuántas observaciones
     ## se incluirán en el test set
-    test_size = int(len(data)* test_ratio)
+    test_size = int(len(data) * test_ratio)
 
     ## Creamos el training y test set seleccionando
     ## los índices correspondientes que generamos
-    train_set = data.iloc[test_size:, :]
-    test_set = data.iloc[:test_size, :]
+    test_idx = idx[:test_size]
+    train_idx = idx[test_size:]
+
+    train_set = data.iloc[train_idx, :]
+    test_set = data.iloc[test_idx, :]
 
     ## Regresamos estos data frames
     ## como resultado de la función

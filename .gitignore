@@ -1,2 +1,6 @@
 .venv
 .quarto
+.env
+*.csv
+*__pycache__/
+*.DS_Store

@@ -1,0 +1,411 @@
+---
+title: "Exploración de Marte: Limpieza de datos"
+format:
+  html:
+    output-file: "mars.html"
+    toc: true
+    html-math-method: katex
+    embed-resources: true
+    self-contained-math: true
+    df-print: kable
+---
+
+## PLanteamiento
+
+En esta actividad del proyecto utilizarás algoritmos de búsqueda para determinar la ruta probable que permitiría a un robot explorador llegar a un objetivo deseado en una superficie con obstáculos.
+
+![](../figures/marte.png){fig-align='center' width='500'}
+
+## Fase 0: Importaciones
+```{python}
+## Fase 0: Importaciones
+import math
+import time
+import heapq
+from collections import deque
+from dataclasses import dataclass
+from typing import Callable, Dict, List, Optional, Tuple
+import numpy as np
+import itertools
+```
+
+## Fase I: Procesamiento del mapa
+```{python}
+## Fase I: Procesamiento del mapa
+mars_map = np.load('/Users/juanfelipezepeda/Documents/TEC/python/mars_map.npy')
+nr, nc = mars_map.shape
+```
+
+## Fase II: Transformación de coordenadas
+```{python}
+## Fase II: Transformación de coordenadas
+print('Número de filas:')
+print(nr, nc)
+
+escala = 10.0174
+
+def getPix(y, x):
+  r = nr - int(y / escala)
+  c =  int(x / escala)
+  return r,c 
+
+def getCoords(r, c):
+  x = c * escala
+  y = (nr - r) * escala
+  return x, y
+
+test_x = 1000
+test_y = 2000
+print('\nCoordenadas de prueba:')
+print(getPix(test_y, test_x))
+```
+
+```{python}
+x_i = 2850 
+y_i = 6400 
+print('Coordenadas iniciales:')
+print(getPix(y_i, x_i))
+
+x_f = 3150
+y_f = 6800
+print('\nCoordenadas finales:')
+print(getPix(y_f, x_f))
+```
+
+## Fase III: Constraits de movimiento
+```{python}
+## Fase III: Constraits de movimiento
+MAX_SLOPE = 0.25
+SCALE_M_PER_PX = 10.0174  # metros por pixel (según enunciado para imagen escalada)
+INVALID_H = -1.0
+```
+
+## Fase IV: Procesamiento de rutas
+```{python}
+# Clases
+NEIGHBORS_8 = [
+    (-1,  0, 1.0), (1,  0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+    (-1, -1, math.sqrt(2)), (-1, 1, math.sqrt(2)),
+    ( 1, -1, math.sqrt(2)), ( 1, 1, math.sqrt(2)),
+]
+
+
+@dataclass(frozen=True)
+class Node:
+    r: int
+    c: int
+
+
+@dataclass
+class SearchResult:
+    found: bool
+    path: List[Node]
+    distance_m: float
+    expanded: int
+    time_s: float
+
+```
+
+```{python}
+# Conversión coordenadas (x,y) -> (r,c)
+# según enunciado:
+# r = n_r - round(y/scale)
+# c = round(x/scale)
+# ----------------------------
+def xy_to_rc(x_m: float, y_m: float, nr: int, nc: int, scale: float = SCALE_M_PER_PX) -> Node:
+    r = int(nr - round(y_m / scale))
+    c = int(round(x_m / scale))
+    return Node(r, c)
+
+
+def rc_to_xy(node: Node, nr: int, nc: int, scale: float = SCALE_M_PER_PX) -> Tuple[float, float]:
+    # inversa aproximada (por redondeo)
+    x = node.c * scale
+    y = (nr - node.r) * scale
+    return x, y
+
+```
+
+```{python}
+# Validación y vecinos
+# ----------------------------
+def in_bounds(r: int, c: int, nr: int, nc: int) -> bool:
+    return 0 <= r < nr and 0 <= c < nc
+
+
+def is_valid_cell(hmap: np.ndarray, r: int, c: int) -> bool:
+    nr, nc = hmap.shape
+    if not in_bounds(r, c, nr, nc):
+        return False
+    return hmap[r, c] != INVALID_H
+
+
+def can_move(hmap: np.ndarray, a: Node, b: Node, max_slope: float) -> bool:
+    ha = hmap[a.r, a.c]
+    hb = hmap[b.r, b.c]
+    if ha == INVALID_H or hb == INVALID_H:
+        return False
+    return abs(ha - hb) < max_slope
+
+
+def neighbors(hmap: np.ndarray, u: Node, max_slope: float) -> List[Tuple[Node, float]]:
+    nr, nc = hmap.shape
+    out = []
+    for dr, dc, step_cost_px in NEIGHBORS_8:
+        rr, cc = u.r + dr, u.c + dc
+        if not in_bounds(rr, cc, nr, nc):
+            continue
+        v = Node(rr, cc)
+        if can_move(hmap, u, v, max_slope):
+            # costo en metros (geometría pura)
+            out.append((v, step_cost_px * SCALE_M_PER_PX))
+    return out
+
+```
+
+```{python}
+# Reconstrucción de ruta
+# ----------------------------
+def reconstruct(came_from: Dict[Node, Node], start: Node, goal: Node) -> List[Node]:
+    cur = goal
+    path = [cur]
+    while cur != start:
+        cur = came_from[cur]
+        path.append(cur)
+    path.reverse()
+    return path
+
+
+def path_distance_m(path: List[Node]) -> float:
+    if len(path) < 2:
+        return 0.0
+    dist = 0.0
+    for i in range(1, len(path)):
+        dr = abs(path[i].r - path[i-1].r)
+        dc = abs(path[i].c - path[i-1].c)
+        if dr == 1 and dc == 1:
+            dist += math.sqrt(2) * SCALE_M_PER_PX
+        else:
+            dist += 1.0 * SCALE_M_PER_PX
+    return dist
+
+```
+
+```{python}
+# Algoritmos
+# ----------------------------
+def bfs(hmap: np.ndarray, start: Node, goal: Node, max_slope: float) -> SearchResult:
+    t0 = time.perf_counter()
+    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
+        return SearchResult(False, [], 0.0, 0, 0.0)
+
+    q = deque([start])
+    came_from: Dict[Node, Node] = {}
+    visited = {start}
+    expanded = 0
+
+    while q:
+        u = q.popleft()
+        expanded += 1
+        if u == goal:
+            path = reconstruct(came_from, start, goal)
+            dt = time.perf_counter() - t0
+            return SearchResult(True, path, path_distance_m(path), expanded, dt)
+
+        for v, _cost_m in neighbors(hmap, u, max_slope):
+            if v not in visited:
+                visited.add(v)
+                came_from[v] = u
+                q.append(v)
+
+    dt = time.perf_counter() - t0
+    return SearchResult(False, [], 0.0, expanded, dt)
+
+_counter = itertools.count()  # global o dentro de cada función
+
+def dijkstra(hmap: np.ndarray, start: Node, goal: Node, max_slope: float) -> SearchResult:
+    t0 = time.perf_counter()
+    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
+        return SearchResult(False, [], 0.0, 0, 0.0)
+
+    dist: Dict[Node, float] = {start: 0.0}
+    came_from: Dict[Node, Node] = {}
+    pq = [(0.0, next(_counter), start)]  # (cost, tie, node)
+    expanded = 0
+    visited = set()
+
+    while pq:
+        du, _t, u = heapq.heappop(pq)
+        if u in visited:
+            continue
+        visited.add(u)
+        expanded += 1
+
+        if u == goal:
+            path = reconstruct(came_from, start, goal)
+            dt = time.perf_counter() - t0
+            return SearchResult(True, path, du, expanded, dt)
+
+        for v, w in neighbors(hmap, u, max_slope):
+            if v in visited:
+                continue
+            nd = du + w
+            if nd < dist.get(v, float("inf")):
+                dist[v] = nd
+                came_from[v] = u
+                heapq.heappush(pq, (nd, next(_counter), v))
+
+    dt = time.perf_counter() - t0
+    return SearchResult(False, [], 0.0, expanded, dt)
+
+
+def a_star(
+    hmap: np.ndarray,
+    start: Node,
+    goal: Node,
+    max_slope: float,
+    heuristic: Callable[[Node, Node], float] = h_euclidean
+) -> SearchResult:
+    t0 = time.perf_counter()
+    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
+        return SearchResult(False, [], 0.0, 0, 0.0)
+
+    g: Dict[Node, float] = {start: 0.0}
+    came_from: Dict[Node, Node] = {}
+    pq = [(heuristic(start, goal), next(_counter), start)]  # (f, tie, node)
+    expanded = 0
+    closed = set()
+
+    while pq:
+        f_u, _t, u = heapq.heappop(pq)
+        if u in closed:
+            continue
+        closed.add(u)
+        expanded += 1
+
+        if u == goal:
+            path = reconstruct(came_from, start, goal)
+            dt = time.perf_counter() - t0
+            return SearchResult(True, path, g[u], expanded, dt)
+
+        for v, w in neighbors(hmap, u, max_slope):
+            if v in closed:
+                continue
+            ng = g[u] + w
+            if ng < g.get(v, float("inf")):
+                g[v] = ng
+                came_from[v] = u
+                heapq.heappush(pq, (ng + heuristic(v, goal), next(_counter), v))
+
+    dt = time.perf_counter() - t0
+    return SearchResult(False, [], 0.0, expanded, dt)
+
+```
+
+```{python}
+# Experimentos solicitados
+# ----------------------------
+def run_case(hmap: np.ndarray, start_xy: Tuple[float, float], goal_xy: Tuple[float, float], max_slope: float) -> None:
+    nr, nc = hmap.shape
+    start = xy_to_rc(start_xy[0], start_xy[1], nr, nc)
+    goal = xy_to_rc(goal_xy[0], goal_xy[1], nr, nc)
+
+    print(f"\nStart (x,y)={start_xy} -> (r,c)=({start.r},{start.c})")
+    print(f"Goal  (x,y)={goal_xy}  -> (r,c)=({goal.r},{goal.c})")
+    print(f"max_slope={max_slope} m")
+
+    for name, algo in [
+        ("BFS", lambda: bfs(hmap, start, goal, max_slope)),
+        ("Dijkstra", lambda: dijkstra(hmap, start, goal, max_slope)),
+        ("A*", lambda: a_star(hmap, start, goal, max_slope, heuristic=h_euclidean)),
+    ]:
+        res = algo()
+        print(
+            f"{name:8} found={res.found}  dist_m={res.distance_m:10.2f}  "
+            f"expanded={res.expanded:8d}  time_s={res.time_s:7.3f}  path_len={len(res.path)}"
+        )
+
+
+def pick_pairs_by_distance(
+    pairs: List[Tuple[Tuple[float, float], Tuple[float, float]]],
+    min_m: float,
+    max_m: float
+) -> List[Tuple[Tuple[float, float], Tuple[float, float], float]]:
+    out = []
+    for (sx, sy), (gx, gy) in pairs:
+        d = math.sqrt((gx - sx) ** 2 + (gy - sy) ** 2)
+        if (d >= min_m) and (d <= max_m):
+            out.append(((sx, sy), (gx, gy), d))
+    return out
+
+
+def benchmark_algorithm(
+    hmap: np.ndarray,
+    algo_name: str,
+    algo_fn: Callable[[np.ndarray, Node, Node, float], SearchResult],
+    test_pairs: List[Tuple[Tuple[float, float], Tuple[float, float]]],
+    max_slope: float,
+    label: str
+) -> None:
+    nr, nc = hmap.shape
+    print(f"\n=== Benchmark {algo_name} | {label} | max_slope={max_slope} ===")
+    for start_xy, goal_xy in test_pairs:
+        start = xy_to_rc(start_xy[0], start_xy[1], nr, nc)
+        goal = xy_to_rc(goal_xy[0], goal_xy[1], nr, nc)
+        if not in_bounds(start.r, start.c, nr, nc) or not in_bounds(goal.r, goal.c, nr, nc):
+            print(
+                f"straight_m={math.dist(start_xy, goal_xy):9.1f}  skipped=True  "
+                f"reason=out_of_bounds start=({start.r},{start.c}) goal=({goal.r},{goal.c})"
+            )
+            continue
+        straight = math.dist(start_xy, goal_xy)
+        res = algo_fn(hmap, start, goal, max_slope)
+        print(
+            f"straight_m={straight:9.1f}  found={res.found}  dist_m={res.distance_m:10.1f}  "
+            f"expanded={res.expanded:8d}  time_s={res.time_s:7.3f}"
+        )
+
+```
+
+```{python}
+# Main
+# ----------------------------
+def main():
+    # Caso obligatorio del enunciado:
+    run_case(
+        mars_map,
+        start_xy=(2850.0, 6400.0),
+        goal_xy=(3150.0, 6800.0),
+        max_slope=0.25
+    )
+
+    # Rendimiento: define tus parejas (x,y) en metros.
+    # Consejo: si eliges puntos en zonas con muchos -1, fallará rápido.
+    candidate_pairs = [
+        ((2000.0, 6000.0), (2400.0, 6100.0)),  # ~412 m
+        ((2600.0, 6500.0), (3000.0, 6700.0)),  # ~447 m
+        ((1000.0, 5000.0), (3000.0, 6500.0)),  # ~2500 m
+        ((1500.0, 4500.0), (5500.0, 6500.0)),  # ~4472 m
+        ((500.0, 500.0), (7000.0, 13000.0)),   # > 10km (válido en mapa)
+        ((500.0, 14000.0), (7300.0, 2000.0)),  # > 10km (válido en mapa)
+    ]
+
+    # Elige un algoritmo para el benchmark (recomendación: A*)
+    algo_name = "A*"
+    algo_fn = lambda hmap, s, g, ms: a_star(hmap, s, g, ms, heuristic=h_euclidean)
+
+    # Filtra por rangos (usa tus propias parejas si quieres control total)
+    short = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 0.0, 500.0)]
+    mid = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 1000.0, 5000.0)]
+    long = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 10000.0, 1e12)]
+
+    benchmark_algorithm(mars_map, algo_name, algo_fn, short, 0.25, "short <=500m")
+    benchmark_algorithm(mars_map, algo_name, algo_fn, mid, 0.25, "mid 1-5km")
+    benchmark_algorithm(mars_map, algo_name, algo_fn, long, 0.25, "long >10km")
+```
+
+```{python}
+# Run
+main()
+
+```

@@ -18,6 +18,7 @@ pandas
 scikit-learn
 scipy
 statsmodels
+scikit-image
 
 ## Visualization
 matplotlib

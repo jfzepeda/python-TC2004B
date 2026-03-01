@@ -1,0 +1,8 @@
+2026-02-28 11:23:58,727 [INFO] Dataset cargado: sacramento.csv → 932 filas, 9 columnas
+2026-02-28 11:23:58,733 [INFO] [OP] strip_whitespace: 3 columnas procesadas
+2026-02-28 11:23:58,744 [INFO] [OP] handle_missing: Numérico: median | Categórico: mode
+2026-02-28 11:23:58,746 [INFO] [OP] remove_duplicates: 2 filas eliminadas
+2026-02-28 11:23:58,748 [INFO] [OP] normalize_strings: 3 columnas normalizadas
+2026-02-28 11:23:58,752 [INFO] [OP] remove_outliers: 446 filas eliminadas (iqr)
+2026-02-28 11:23:58,752 [INFO] Limpieza completada en 0.03s → (484, 9)
+2026-02-28 11:23:58,755 [INFO] Dataset guardado: ../data/dataset_limpio.csv

@@ -1,8 +1,8 @@
 ---
-title: "Proyecto Su Casita"
+title: "Data cleaning pipeline"
 format:
   html:
-    output-file: "Proyecto Su Casita"
+    output-file: "cleaning.html"
     toc: true
     html-math-method: katex
     embed-resources: true
@@ -20,12 +20,7 @@ format:
 
 ## Fase III: Limpieza de datos
 ```{python}
-from data_cleaner import DataCleaner, CleanerConfig
-
-cleaner = DataCleaner()
-df_clean = cleaner.clean("mi_dataset.csv")  # CSV, Excel, JSON, Parquet
-cleaner.save(df_clean, "dataset_limpio.csv")
-cleaner.print_report()
+%run ../scripts/data_cleaner.py
 ```
 
 ```{python}
@@ -39,4 +34,11 @@ config = CleanerConfig(
     rename_columns={"col_vieja": "col_nueva"},
 )
 cleaner = DataCleaner(config=config)
+```
+
+```{python}
+cleaner = DataCleaner()
+df_clean = cleaner.clean("../data/sacramento.csv")  # CSV, Excel, JSON, Parquet
+cleaner.save(df_clean, "../data/dataset_limpio.csv")
+cleaner.print_report()
 ```

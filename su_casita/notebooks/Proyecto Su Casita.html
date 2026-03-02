@@ -2265,7 +2265,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 </section>
 <section id="fase-ii-entendimiento-de-los-datos" class="level2">
 <h2 class="anchored" data-anchor-id="fase-ii-entendimiento-de-los-datos">Fase II: Entendimiento de los datos</h2>
-<div id="b03b22f2" class="cell" data-execution_count="1">
+<div id="45e581a5" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -2282,7 +2282,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="9fe99616" class="cell" data-execution_count="2">
+<div id="4e137d56" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos los datos</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">&quot;../data/sacramento.csv&quot;</span>)</span>
@@ -2373,7 +2373,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 </div>
 </div>
 </div>
-<div id="44ce8289" class="cell" data-execution_count="3">
+<div id="216ee545" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Información general</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2396,7 +2396,7 @@ dtypes: float64(3), int64(3), str(3)
 memory usage: 65.7 KB</code></pre>
 </div>
 </div>
-<div id="a92f2d7c" class="cell" data-execution_count="4">
+<div id="0b95de09" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribución de tipo de vivienda</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>data[<span class="st">&quot;type&quot;</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2408,7 +2408,7 @@ Multi_Family    0.013948
 Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
-<div id="c659eb23" class="cell" data-execution_count="5">
+<div id="6a13b106" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Relación de zip con tipo de vivienda</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pd.crosstab(data[<span class="st">&quot;zip&quot;</span>], data[<span class="st">&quot;type&quot;</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2505,7 +2505,7 @@ Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="8d0aadcd" class="cell" data-execution_count="6">
+<div id="8aabd920" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estadísticas descriptivas</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>data.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2607,7 +2607,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="fase-iii-partición-de-datos" class="level2">
 <h2 class="anchored" data-anchor-id="fase-iii-partición-de-datos">Fase III: Partición de datos</h2>
-<div id="6c6a95f9" class="cell" data-execution_count="7">
+<div id="ba18b312" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>run ..<span class="op">/</span>scripts<span class="op">/</span>funciones.py</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">help</span>(create_train_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2635,7 +2635,7 @@ create_train_test(data, test_ratio, seed)
 </code></pre>
 </div>
 </div>
-<div id="8ef542a0" class="cell" data-execution_count="8">
+<div id="88e7b91a" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split manual (con nuestra función)</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>train_set, test_set <span class="op">=</span> create_train_test(data, test_ratio<span class="op">=</span><span class="fl">0.30</span>, seed<span class="op">=</span><span class="dv">1234</span>)</span>
@@ -2726,7 +2726,7 @@ create_train_test(data, test_ratio, seed)
 </div>
 </div>
 </div>
-<div id="3aee5e7c" class="cell" data-execution_count="9">
+<div id="5152708a" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split con sklearn</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>sklearn_train, sklearn_test <span class="op">=</span> train_test_split(</span>
@@ -2822,7 +2822,7 @@ create_train_test(data, test_ratio, seed)
 </div>
 </div>
 </div>
-<div id="229af2fe" class="cell" data-execution_count="10">
+<div id="44b44baf" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribución de la variable objetivo</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>sns.histplot(data, x<span class="op">=</span><span class="st">&quot;price&quot;</span>, bins<span class="op">=</span><span class="dv">25</span>, color<span class="op">=</span><span class="st">&quot;dodgerblue&quot;</span>)</span>
@@ -2836,7 +2836,7 @@ create_train_test(data, test_ratio, seed)
 </div>
 </div>
 </div>
-<div id="06b76d71" class="cell" data-execution_count="11">
+<div id="71cb0fdc" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Discretización de precio para split estratificado</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>price_cuts <span class="op">=</span> np.quantile(data[<span class="st">&quot;price&quot;</span>], [<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>])</span>
@@ -2845,7 +2845,7 @@ create_train_test(data, test_ratio, seed)
 <pre><code>array([140160., 194818., 245000., 334000.])</code></pre>
 </div>
 </div>
-<div id="b821cf83" class="cell" data-execution_count="12">
+<div id="3bf09543" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data[<span class="st">&quot;price_cat&quot;</span>] <span class="op">=</span> pd.cut(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    data[<span class="st">&quot;price&quot;</span>],</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="op">-</span>np.inf, price_cuts[<span class="dv">0</span>], price_cuts[<span class="dv">1</span>], price_cuts[<span class="dv">2</span>], price_cuts[<span class="dv">3</span>], np.inf],</span>
@@ -2863,7 +2863,7 @@ create_train_test(data, test_ratio, seed)
 Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
-<div id="95b2b6b6" class="cell" data-execution_count="13">
+<div id="70eaddde" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split estratificado</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>strat_train, strat_test <span class="op">=</span> train_test_split(</span>
@@ -2884,7 +2884,7 @@ Name: proportion, dtype: float64</code></pre>
 Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
-<div id="e70aba8e" class="cell" data-execution_count="14">
+<div id="6464275b" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparación visual de distribuciones de price</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
@@ -2907,7 +2907,7 @@ Name: proportion, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="2a5a53f6" class="cell" data-execution_count="15">
+<div id="9147bcd7" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quitamos variable auxiliar</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> set_ <span class="kw">in</span> (strat_train, strat_test):</span>
@@ -2916,7 +2916,7 @@ Name: proportion, dtype: float64</code></pre>
 </section>
 <section id="fase-iv-exploración-y-entendimiento-de-variables" class="level2">
 <h2 class="anchored" data-anchor-id="fase-iv-exploración-y-entendimiento-de-variables">Fase IV: Exploración y entendimiento de variables</h2>
-<div id="2179dff3" class="cell" data-execution_count="16">
+<div id="f3d2a8bf" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data_train <span class="op">=</span> strat_train.copy()</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>categorical_vars <span class="op">=</span> data_train.select_dtypes(exclude<span class="op">=</span>np.number).columns</span>
@@ -2928,7 +2928,7 @@ Name: proportion, dtype: float64</code></pre>
  Index([&#39;beds&#39;, &#39;baths&#39;, &#39;sqft&#39;, &#39;price&#39;, &#39;latitude&#39;, &#39;longitude&#39;], dtype=&#39;str&#39;))</code></pre>
 </div>
 </div>
-<div id="20079535" class="cell" data-execution_count="17">
+<div id="5d97a770" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Matriz de correlación de Pearson</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="op">=</span> data_train[numeric_vars].corr()</span>
@@ -2943,7 +2943,7 @@ latitude     0.135755
 Name: price, dtype: float64</code></pre>
 </div>
 </div>
-<div id="3cb78a87" class="cell" data-execution_count="18">
+<div id="36eaf1db" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Heatmap triangular superior</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones_like(cor_mat, dtype<span class="op">=</span><span class="bu">bool</span>))</span>
@@ -2959,7 +2959,7 @@ Name: price, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="2e6b72ac" class="cell" data-execution_count="19">
+<div id="c5331fbf" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Correlación de Spearman</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>cor_mat_spearman <span class="op">=</span> data_train[numeric_vars].corr(method<span class="op">=</span><span class="st">&quot;spearman&quot;</span>)</span>
@@ -2977,7 +2977,7 @@ Name: price, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="cec3cf09" class="cell" data-execution_count="20">
+<div id="d612879e" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ingeniería manual de variables para exploración</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>data_train[<span class="st">&quot;baths_per_sqft&quot;</span>] <span class="op">=</span> data_train[<span class="st">&quot;baths&quot;</span>] <span class="op">/</span> data_train[<span class="st">&quot;sqft&quot;</span>]</span>
@@ -2997,7 +2997,7 @@ beds_per_sqft    -0.595202
 Name: price, dtype: float64</code></pre>
 </div>
 </div>
-<div id="4b1fa8e1" class="cell" data-execution_count="21">
+<div id="d51fccc7" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dispersión de variables con mayor relación al objetivo</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>cols <span class="op">=</span> [<span class="st">&quot;price&quot;</span>, <span class="st">&quot;sqft&quot;</span>, <span class="st">&quot;baths_per_sqft&quot;</span>, <span class="st">&quot;beds_per_sqft&quot;</span>, <span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>]</span>
@@ -3014,7 +3014,7 @@ Name: price, dtype: float64</code></pre>
 </section>
 <section id="fase-v-preparación-de-datos" class="level2">
 <h2 class="anchored" data-anchor-id="fase-v-preparación-de-datos">Fase V: Preparación de datos</h2>
-<div id="f92d3d9f" class="cell" data-execution_count="22">
+<div id="7aba7b8b" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definimos X/y de entrenamiento</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> strat_train.drop(columns<span class="op">=</span>[<span class="st">&quot;price&quot;</span>]).copy()</span>
@@ -3023,7 +3023,7 @@ Name: price, dtype: float64</code></pre>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> strat_test.drop(columns<span class="op">=</span>[<span class="st">&quot;price&quot;</span>]).copy()</span>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> strat_test[<span class="st">&quot;price&quot;</span>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="df6987ff" class="cell" data-execution_count="23">
+<div id="cb020e2b" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Separación numérico/categórico</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>X_train_num <span class="op">=</span> X_train.select_dtypes(include<span class="op">=</span>np.number)</span>
@@ -3092,7 +3092,7 @@ Name: price, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="880fe752" class="cell" data-execution_count="24">
+<div id="ef425457" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Imputación numérica</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>imputer <span class="op">=</span> SimpleImputer(strategy<span class="op">=</span><span class="st">&quot;median&quot;</span>)</span>
@@ -3165,7 +3165,7 @@ Name: price, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="2c052405" class="cell" data-execution_count="25">
+<div id="1b7bdaae" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One-hot para categóricas</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>encoder <span class="op">=</span> OneHotEncoder(drop<span class="op">=</span><span class="st">&quot;first&quot;</span>, handle_unknown<span class="op">=</span><span class="st">&quot;ignore&quot;</span>, sparse_output<span class="op">=</span><span class="va">False</span>)</span>
@@ -3197,7 +3197,7 @@ Name: price, dtype: float64</code></pre>
  array([&#39;Condo&#39;, &#39;Multi_Family&#39;, &#39;Residential&#39;], dtype=object)]</code></pre>
 </div>
 </div>
-<div id="b007e0a0" class="cell" data-execution_count="26">
+<div id="a5da3fb6" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Escalamiento estándar</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
@@ -3211,7 +3211,7 @@ Name: price, dtype: float64</code></pre>
        [-0.30412291, -0.08307843,  0.79146256,  1.10550408,  0.7816876 ]])</code></pre>
 </div>
 </div>
-<div id="151ecafe" class="cell" data-execution_count="27">
+<div id="63fabb72" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Shortcut equivalente</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>X_train_num_std2 <span class="op">=</span> StandardScaler().fit_transform(X_train_num_imp)</span>
@@ -3220,7 +3220,7 @@ Name: price, dtype: float64</code></pre>
 <pre><code>True</code></pre>
 </div>
 </div>
-<div id="ddb7c2e7" class="cell" data-execution_count="28">
+<div id="4238df4f" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transformación logarítmica de sqft</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>log_transformer <span class="op">=</span> FunctionTransformer(func<span class="op">=</span>np.log, inverse_func<span class="op">=</span>np.exp)</span>
@@ -3230,7 +3230,7 @@ Name: price, dtype: float64</code></pre>
 <pre><code>array([7.08506429, 7.09506438, 7.55485852, 7.12689081, 7.72929567])</code></pre>
 </div>
 </div>
-<div id="dc5bfd49" class="cell" data-execution_count="29">
+<div id="77fd91ab" class="cell" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función auxiliar para cocientes</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> column_ratio(X):</span>
@@ -3240,7 +3240,7 @@ Name: price, dtype: float64</code></pre>
 <span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ratio_name(function_transformer, feature_names_in):</span>
 <span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="st">&quot;ratio&quot;</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="b921a78b" class="cell" data-execution_count="30">
+<div id="89f60b60" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transformer de razón</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>ratio_transf <span class="op">=</span> FunctionTransformer(column_ratio, feature_names_out<span class="op">=</span>ratio_name)</span>
@@ -3262,7 +3262,7 @@ Name: price, dtype: float64</code></pre>
         [0.00131926]]))</code></pre>
 </div>
 </div>
-<div id="1a73ef9e" class="cell" data-execution_count="31">
+<div id="9d855408" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pipeline numérico base</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>num_pipeline <span class="op">=</span> make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">&quot;median&quot;</span>), StandardScaler())</span>
@@ -3276,7 +3276,7 @@ Name: price, dtype: float64</code></pre>
        [-0.30412291, -0.08307843,  0.79146256,  1.10550408,  0.7816876 ]])</code></pre>
 </div>
 </div>
-<div id="e3770155" class="cell" data-execution_count="32">
+<div id="15bd1879" class="cell" data-execution_count="32">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pipeline categórico</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>cat_pipeline <span class="op">=</span> make_pipeline(</span>
@@ -3290,7 +3290,7 @@ Name: price, dtype: float64</code></pre>
 <pre><code>(652, 99)</code></pre>
 </div>
 </div>
-<div id="b24fa53e" class="cell" data-execution_count="33">
+<div id="aa96c7c6" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Column transformer simple</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>preprocessing_simple <span class="op">=</span> make_column_transformer(</span>
@@ -3304,7 +3304,7 @@ Name: price, dtype: float64</code></pre>
 <pre><code>(652, 104)</code></pre>
 </div>
 </div>
-<div id="34d9725d" class="cell" data-execution_count="34">
+<div id="9f2f5701" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pipelines especializadas</span></span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ratio_pipeline():</span>
@@ -3327,7 +3327,7 @@ Name: price, dtype: float64</code></pre>
 <span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
 <span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="40b5a4c2" class="cell" data-execution_count="35">
+<div id="8fc5f185" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocesamiento completo</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>preprocessing <span class="op">=</span> ColumnTransformer(</span>
@@ -3513,7 +3513,7 @@ Name: price, dtype: float64</code></pre>
 </section>
 <section id="fase-vi-modelado-y-evaluación" class="level2">
 <h2 class="anchored" data-anchor-id="fase-vi-modelado-y-evaluación">Fase VI: Modelado y evaluación</h2>
-<div id="892e387b" class="cell" data-execution_count="36">
+<div id="47fcde9a" class="cell" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo lineal con pipeline end-to-end</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>lin_model <span class="op">=</span> make_pipeline(preprocessing, LinearRegression())</span>
@@ -4024,7 +4024,7 @@ a.param-doc-link::before {
                                                                   (&#39;onehotencoder&#39;,
                                                                    OneHotEncoder(drop=&#39;first&#39;,
                                                                                  handle_unknown=&#39;ignore&#39;))]),
-                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x1351f9a90&gt;)])),
+                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x168a0da90&gt;)])),
                 (&#39;linearregression&#39;, LinearRegression())])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox"><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Pipeline</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.pipeline.Pipeline.html">?<span>Documentation for Pipeline</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix>
         <div class="estimator-table">
             <details>
@@ -4511,7 +4511,7 @@ in which case `fill_value` will be used instead.<br>
 The callable to use for the transformation. This will be passed<br>
 the same arguments as transform, with args and kwargs forwarded.<br>
 If func is None, then func will be the identity function.</span></a></td>
-<td class="value">&lt;function col...t 0x133f49300&gt;</td>
+<td class="value">&lt;function col...t 0x13f444a40&gt;</td>
 </tr>
 <tr class="default even">
 <td><em></em></td>
@@ -4575,7 +4575,7 @@ names. The `get_feature_names_out` method is only defined if<br>
 See ``get_feature_names_out`` for more details.<br>
 <br>
 .. versionadded:: 1.1</span></a></td>
-<td class="value">&lt;function rat...t 0x133f48ea0&gt;</td>
+<td class="value">&lt;function rat...t 0x13f4440e0&gt;</td>
 </tr>
 <tr class="default odd">
 <td><em></em></td>
@@ -4766,7 +4766,7 @@ in which case `fill_value` will be used instead.<br>
 The callable to use for the transformation. This will be passed<br>
 the same arguments as transform, with args and kwargs forwarded.<br>
 If func is None, then func will be the identity function.</span></a></td>
-<td class="value">&lt;function col...t 0x133f49300&gt;</td>
+<td class="value">&lt;function col...t 0x13f444a40&gt;</td>
 </tr>
 <tr class="default even">
 <td><em></em></td>
@@ -4830,7 +4830,7 @@ names. The `get_feature_names_out` method is only defined if<br>
 See ``get_feature_names_out`` for more details.<br>
 <br>
 .. versionadded:: 1.1</span></a></td>
-<td class="value">&lt;function rat...t 0x133f48ea0&gt;</td>
+<td class="value">&lt;function rat...t 0x13f4440e0&gt;</td>
 </tr>
 <tr class="default odd">
 <td><em></em></td>
@@ -5156,7 +5156,7 @@ unit standard deviation).</span></a></td>
 
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-18" type="checkbox"><label for="sk-estimator-id-18" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>cat</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="columntransformer__cat__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x1351f9a90&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-19" type="checkbox"><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.impute.SimpleImputer.html">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="columntransformer__cat__simpleimputer__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-18" type="checkbox"><label for="sk-estimator-id-18" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>cat</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="columntransformer__cat__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x168a0da90&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-19" type="checkbox"><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.impute.SimpleImputer.html">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="columntransformer__cat__simpleimputer__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -5762,7 +5762,7 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-1');</script>
 </div>
 </div>
-<div id="318f924d" class="cell" data-execution_count="37">
+<div id="19c6fbf7" class="cell" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validación cruzada RMSE (lineal)</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>lin_rmse_cv <span class="op">=</span> <span class="op">-</span>cross_val_score(</span>
@@ -5775,23 +5775,23 @@ forceTheme('sk-container-id-1');</script>
 <span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>pd.Series(lin_rmse_cv).describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+<pre><code>/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 </code></pre>
@@ -5808,7 +5808,7 @@ max      84862.450393
 dtype: float64</code></pre>
 </div>
 </div>
-<div id="e0009b89" class="cell" data-execution_count="38">
+<div id="bdf32d79" class="cell" data-execution_count="38">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo de árboles</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>rf_model <span class="op">=</span> make_pipeline(</span>
@@ -5831,23 +5831,23 @@ dtype: float64</code></pre>
 <span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>pd.Series(rf_rmse_cv).describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+<pre><code>/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 
-/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 </code></pre>
@@ -5864,7 +5864,7 @@ max      88988.173047
 dtype: float64</code></pre>
 </div>
 </div>
-<div id="1a0a97d6" class="cell" data-execution_count="39">
+<div id="d5ea0c32" class="cell" data-execution_count="39">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamos el mejor modelo y evaluamos en test</span></span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>rf_model.fit(X_train, y_train)</span>
@@ -5876,7 +5876,7 @@ dtype: float64</code></pre>
 <span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>{<span class="st">&quot;MAE&quot;</span>: mae, <span class="st">&quot;RMSE&quot;</span>: rmse, <span class="st">&quot;R2&quot;</span>: r2}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/Users/juanfelipezepeda/Documents/TEC/TC2004B/python/.venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
+<pre><code>/Users/juanfelipezepeda/Documents/TEC/python/venv/lib/python3.13/site-packages/sklearn/preprocessing/_encoders.py:261: UserWarning:
 
 Found unknown categories in columns [0, 1] during transform. These unknown categories will be encoded as all zeros
 </code></pre>
@@ -5885,7 +5885,7 @@ Found unknown categories in columns [0, 1] during transform. These unknown categ
 <pre><code>{&#39;MAE&#39;: 55468.35638165369, &#39;RMSE&#39;: 76010.05806376657, &#39;R2&#39;: 0.6667941803628246}</code></pre>
 </div>
 </div>
-<div id="705869a4" class="cell" data-execution_count="40">
+<div id="9f41753e" class="cell" data-execution_count="40">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ejemplo de predicciones</span></span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>pred_sample <span class="op">=</span> pd.DataFrame(</span>

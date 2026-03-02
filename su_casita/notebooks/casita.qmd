@@ -385,13 +385,82 @@ X_train_prepared = pd.DataFrame(
 X_train_prepared.head()
 ```
 
-## Fase VI: Modelado y evaluación
+```{python}
+# Transformamos también el conjunto de prueba con el mismo preprocesamiento
+
+X_test_prepared = preprocessing.transform(X_test)
+if sparse.issparse(X_test_prepared):
+    X_test_prepared = X_test_prepared.toarray()
+X_test_prepared = pd.DataFrame(
+    X_test_prepared,
+    columns=preprocessing.get_feature_names_out(),
+    index=X_test.index,
+)
+
+X_test_prepared.head()
+```
+
+## Fase VI: Feature selection con BorutaShap
 
 ```{python}
-# Modelo lineal con pipeline end-to-end
+# Selección de variables con BorutaShap usando un modelo de árboles
 
-lin_model = make_pipeline(preprocessing, LinearRegression())
-lin_model.fit(X_train, y_train)
+try:
+    from BorutaShap import BorutaShap
+except ModuleNotFoundError as exc:
+    raise ModuleNotFoundError(
+        "BorutaShap no está instalado. Instálalo con: pip install BorutaShap shap"
+    ) from exc
+
+feature_selector = BorutaShap(
+    model=RandomForestRegressor(
+        n_estimators=300,
+        random_state=42,
+        n_jobs=-1,
+        min_samples_leaf=2,
+    ),
+    importance_measure="shap",
+    classification=False,
+)
+
+feature_selector.fit(
+    X=X_train_prepared,
+    y=y_train,
+    n_trials=30,
+    sample=False,
+    train_or_test="test",
+    normalize=True,
+    verbose=True,
+    random_state=42,
+)
+```
+
+```{python}
+# Variables aceptadas por BorutaShap
+
+selected_features = feature_selector.accepted
+selected_features
+```
+
+```{python}
+# Subconjuntos finales para modelado
+
+if len(selected_features) == 0:
+    selected_features = X_train_prepared.columns.tolist()
+
+X_train_selected = X_train_prepared[selected_features].copy()
+X_test_selected = X_test_prepared[selected_features].copy()
+
+X_train_selected.shape, X_test_selected.shape
+```
+
+## Fase VII: Modelado y evaluación
+
+```{python}
+# Modelo lineal sobre variables seleccionadas
+
+lin_model = LinearRegression()
+lin_model.fit(X_train_selected, y_train)
 ```
 
 ```{python}
@@ -399,7 +468,7 @@ lin_model.fit(X_train, y_train)
 
 lin_rmse_cv = -cross_val_score(
     lin_model,
-    X_train,
+    X_train_selected,
     y_train,
     scoring="neg_root_mean_squared_error",
     cv=5,
@@ -411,19 +480,16 @@ pd.Series(lin_rmse_cv).describe()
 ```{python}
 # Modelo de árboles
 
-rf_model = make_pipeline(
-    preprocessing,
-    RandomForestRegressor(
-        n_estimators=300,
-        random_state=42,
-        n_jobs=-1,
-        min_samples_leaf=2,
-    ),
+rf_model = RandomForestRegressor(
+    n_estimators=300,
+    random_state=42,
+    n_jobs=-1,
+    min_samples_leaf=2,
 )
 
 rf_rmse_cv = -cross_val_score(
     rf_model,
-    X_train,
+    X_train_selected,
     y_train,
     scoring="neg_root_mean_squared_error",
     cv=5,
@@ -435,8 +501,8 @@ pd.Series(rf_rmse_cv).describe()
 ```{python}
 # Entrenamos el mejor modelo y evaluamos en test
 
-rf_model.fit(X_train, y_train)
-pred_test = rf_model.predict(X_test)
+rf_model.fit(X_train_selected, y_train)
+pred_test = rf_model.predict(X_test_selected)
 
 mae = mean_absolute_error(y_test, pred_test)
 rmse = mean_squared_error(y_test, pred_test) ** 0.5

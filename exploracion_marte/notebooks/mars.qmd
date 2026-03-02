@@ -16,9 +16,9 @@ En esta actividad del proyecto utilizarás algoritmos de búsqueda para determin
 
 ![](../figures/marte.png){fig-align='center' width='500'}
 
-## Fase 0: Importaciones
+## Fase 1: Importaciones
 ```{python}
-## Fase 0: Importaciones
+## Fase 1: Importaciones
 import math
 import time
 import heapq
@@ -28,29 +28,24 @@ from typing import Callable, Dict, List, Tuple
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
-```
 
-## Fase I: Procesamiento del mapa
-```{python}
-## Fase I: Procesamiento del mapa
+# Procesamiento del mapa
 mars_map = np.load('/Users/juanfelipezepeda/Documents/TEC/python/mars_map.npy')
 nr, nc = mars_map.shape
-```
 
-## Fase II: Transformación de coordenadas
-```{python}
-## Fase II: Transformación de coordenadas
+# Transformación de coordenadas
+
 print('Número de filas:')
 print(nr, nc)
 
 escala = 10.0174
 
-def getPix(y, x):
-  r = nr - int(y / escala)
-  c =  int(x / escala)
-  return r,c 
+def coords_to_rows(x, y):
+  r = int(nr - round(y / escala))
+  c = int(round(x / escala))
+  return r, c
 
-def getCoords(r, c):
+def rows_to_coords(r, c):
   x = c * escala
   y = (nr - r) * escala
   return x, y
@@ -58,43 +53,61 @@ def getCoords(r, c):
 test_x = 1000
 test_y = 2000
 print('\nCoordenadas de prueba:')
-print(getPix(test_y, test_x))
-```
+print(coords_to_rows(test_y, test_x))
 
-```{python}
 x_i = 2850 
 y_i = 6400 
 print('Coordenadas iniciales:')
-print(getPix(y_i, x_i))
+print(coords_to_rows(y_i, x_i))
 
 x_f = 3150
 y_f = 6800
 print('\nCoordenadas finales:')
-print(getPix(y_f, x_f))
+print(coords_to_rows(y_f, x_f))
 ```
 
-## Fase III: Constraits de movimiento
+## Fase II: Constraits
 ```{python}
-## Fase III: Constraits de movimiento
+## Fase II: Constraits
 MAX_SLOPE = 0.25
-SCALE_M_PER_PX = 10.0174  # metros por pixel (según enunciado para imagen escalada)
+SCALE_M_PER_PX = 10.0174
 INVALID_H = -1.0
-```
+HMAP = mars_map
 
-## Fase IV: Procesamiento de rutas
-```{python}
+START_X = 2850 
+START_Y = 6400
+
+END_X = 3150
+# END_Y = 6800
+END_Y = 16800
+
+# Initial Matrix states
+
+filas = nr
+columnas = nc
+valor_predeterminado = None
+
+# Crear matriz reached en false
+reached = [[valor_predeterminado for _ in range(columnas)] for _ in range(filas)]
+# Crear matriz frontier en false
+frontier = [[valor_predeterminado for _ in range(columnas)] for _ in range(filas)]
+# Crear matriz path en false
+path = [[valor_predeterminado for _ in range(columnas)] for _ in range(filas)]
+
 # Clases
-NEIGHBORS_8 = [
-    (-1,  0, 1.0), (1,  0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
-    (-1, -1, math.sqrt(2)), (-1, 1, math.sqrt(2)),
-    ( 1, -1, math.sqrt(2)), ( 1, 1, math.sqrt(2)),
-]
-
 
 @dataclass(frozen=True)
 class Node:
-    r: int
-    c: int
+  row: int
+  col: int
+  height: float 
+  heur: float
+  cost: float = 0.0
+  prev: 'Node' = None
+
+  def expanded(self):
+    reached[self.row][self.col] = self
+    frontier[self.row][self.col] = None
 
 
 @dataclass
@@ -106,403 +119,96 @@ class SearchResult:
     expanded: int
     time_s: float
 
+def calcHeur(r, c, tx = END_X, ty = END_Y):
+  x, y = rows_to_coords(r,c)
+  delta_x = math.fabs(x - tx)
+  delta_y = math.fabs(y - ty)
+  dist_euc = math.sqrt(delta_x**2 + delta_y**2)
+  return dist_euc
+
+## INITIAL STATES
+
+def buildInitNode():
+  r, c = coords_to_rows(START_X, START_Y)
+  h = HMAP[r,c]
+  heur = calcHeur(r, c)
+  return Node(r, c, h, heur)
+```
+
+## Fase III: Funciones operativas
+```{python}
+## Fase III: Funciones operativas
+NEIGHBORS_8 = [
+    (-1,  0, 1.0), (1,  0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+    (-1, -1, math.sqrt(2)), (-1, 1, math.sqrt(2)),
+    ( 1, -1, math.sqrt(2)), ( 1, 1, math.sqrt(2)),
+]
+
+def isValidNeighbour(curr_nodo: Node, new_nodo: Node):
+  # Validación básica de altura
+  if new_nodo.height is None or new_nodo.height <= INVALID_H:
+    return False
+
+  # Pendiente (diferencia de altura). Si quieres pendiente real, divide por la distancia.
+  slope = math.fabs(new_nodo.height - curr_nodo.height)
+  if slope > MAX_SLOPE:
+    return False
+
+  return True
+
+def getNeigbors(nodo: Node):
+  neighbors: List[Node] = []
+
+  for dr, dc, step_cost in NEIGHBORS_8:
+    r = nodo.row + dr
+    c = nodo.col + dc
+
+    # Evitar IndexError (límites del mapa)
+    if r < 0 or r >= nr or c < 0 or c >= nc:
+      continue
+
+    h = float(HMAP[r, c])
+    g = nodo.cost + step_cost
+    heur = calcHeur(r, c)
+
+    nn = Node(r, c, h, heur, g, nodo)
+
+    if isValidNeighbour(nodo, nn):
+      neighbors.append(nn)
+
+  return neighbors
+    
+  
+def expandirNodo(nodo: Node):
+  nodo.expanded()
+  neigbors: [Node] = getNeigbors(nodo)
+  for n in neigbors:
+    frontier[n.row][n.col] = 1
+  return(len(neigbors))
 ```
 
 ```{python}
-# Conversión coordenadas (x,y) -> (r,c)
-# según enunciado:
-# r = n_r - round(y/scale)
-# c = round(x/scale)
-# ----------------------------
-def xy_to_rc(x_m: float, y_m: float, nr: int, nc: int, scale: float = SCALE_M_PER_PX) -> Node:
-    r = int(nr - round(y_m / scale))
-    c = int(round(x_m / scale))
-    return Node(r, c)
+START_NODE = buildInitNode()
+START_NODE.expanded()
 
-
-def rc_to_xy(node: Node, nr: int, nc: int, scale: float = SCALE_M_PER_PX) -> Tuple[float, float]:
-    # inversa aproximada (por redondeo)
-    x = node.c * scale
-    y = (nr - node.r) * scale
-    return x, y
-
-def h_zero(_a: Node, _b: Node) -> float:
-    return 0.0
-
-
-def h_euclidean(a: Node, b: Node) -> float:
-    dr = a.r - b.r
-    dc = a.c - b.c
-    return math.hypot(dr, dc) * SCALE_M_PER_PX
+print(expandirNodo(START_NODE))
 ```
 
 ```{python}
-# Validación y vecinos
-# ----------------------------
-def in_bounds(r: int, c: int, nr: int, nc: int) -> bool:
-    return 0 <= r < nr and 0 <= c < nc
+print('Rows:', nr, nc)
+START_R, START_C = coords_to_rows(START_X, START_Y)
+END_R, END_C     = coords_to_rows(END_X, END_Y)
 
+print('\nCoordenadas del inicio:' , START_X, START_Y) 
+print('Filas del inicio:' , START_R, START_C)
+print('\nCoordenadas del objetivo:' , END_X, END_Y) 
+print('Filas del objetivo:' , END_R, END_C)
 
-def is_valid_cell(hmap: np.ndarray, r: int, c: int) -> bool:
-    nr, nc = hmap.shape
-    if not in_bounds(r, c, nr, nc):
-        return False
-    return hmap[r, c] != INVALID_H
-
-
-def can_move(hmap: np.ndarray, a: Node, b: Node, max_slope: float) -> bool:
-    ha = hmap[a.r, a.c]
-    hb = hmap[b.r, b.c]
-    if ha == INVALID_H or hb == INVALID_H:
-        return False
-    return abs(ha - hb) < max_slope
-
-
-def neighbors(hmap: np.ndarray, u: Node, max_slope: float) -> List[Tuple[Node, float]]:
-    nr, nc = hmap.shape
-    out = []
-    for dr, dc, step_cost_px in NEIGHBORS_8:
-        rr, cc = u.r + dr, u.c + dc
-        if not in_bounds(rr, cc, nr, nc):
-            continue
-        v = Node(rr, cc)
-        if can_move(hmap, u, v, max_slope):
-            # costo en metros (geometría pura)
-            out.append((v, step_cost_px * SCALE_M_PER_PX))
-    return out
-
-```
-
-```{python}
-# Reconstrucción de ruta
-# ----------------------------
-def reconstruct(came_from: Dict[Node, Node], start: Node, goal: Node) -> List[Node]:
-    cur = goal
-    path = [cur]
-    while cur != start:
-        cur = came_from[cur]
-        path.append(cur)
-    path.reverse()
-    return path
-
-
-def path_distance_m(path: List[Node]) -> float:
-    if len(path) < 2:
-        return 0.0
-    dist = 0.0
-    for i in range(1, len(path)):
-        dr = abs(path[i].r - path[i-1].r)
-        dc = abs(path[i].c - path[i-1].c)
-        if dr == 1 and dc == 1:
-            dist += math.sqrt(2) * SCALE_M_PER_PX
-        else:
-            dist += 1.0 * SCALE_M_PER_PX
-    return dist
-
-```
-
-```{python}
-# Algoritmos
-# ----------------------------
-def bfs(hmap: np.ndarray, start: Node, goal: Node, max_slope: float) -> SearchResult:
-    t0 = time.perf_counter()
-    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
-        return SearchResult(False, [], [], 0.0, 0, 0.0)
-
-    q = deque([start])
-    came_from: Dict[Node, Node] = {}
-    visited = {start}
-    expanded = 0
-    explored_nodes: List[Node] = []
-
-    while q:
-        u = q.popleft()
-        expanded += 1
-        explored_nodes.append(u)
-        if u == goal:
-            path = reconstruct(came_from, start, goal)
-            dt = time.perf_counter() - t0
-            return SearchResult(True, path, explored_nodes, path_distance_m(path), expanded, dt)
-
-        for v, _cost_m in neighbors(hmap, u, max_slope):
-            if v not in visited:
-                visited.add(v)
-                came_from[v] = u
-                q.append(v)
-
-    dt = time.perf_counter() - t0
-    return SearchResult(False, [], explored_nodes, 0.0, expanded, dt)
-
-_counter = itertools.count()  # global o dentro de cada función
-
-def dijkstra(hmap: np.ndarray, start: Node, goal: Node, max_slope: float) -> SearchResult:
-    t0 = time.perf_counter()
-    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
-        return SearchResult(False, [], [], 0.0, 0, 0.0)
-
-    dist: Dict[Node, float] = {start: 0.0}
-    came_from: Dict[Node, Node] = {}
-    pq = [(0.0, next(_counter), start)]  # (cost, tie, node)
-    expanded = 0
-    visited = set()
-    explored_nodes: List[Node] = []
-
-    while pq:
-        du, _t, u = heapq.heappop(pq)
-        if u in visited:
-            continue
-        visited.add(u)
-        expanded += 1
-        explored_nodes.append(u)
-
-        if u == goal:
-            path = reconstruct(came_from, start, goal)
-            dt = time.perf_counter() - t0
-            return SearchResult(True, path, explored_nodes, du, expanded, dt)
-
-        for v, w in neighbors(hmap, u, max_slope):
-            if v in visited:
-                continue
-            nd = du + w
-            if nd < dist.get(v, float("inf")):
-                dist[v] = nd
-                came_from[v] = u
-                heapq.heappush(pq, (nd, next(_counter), v))
-
-    dt = time.perf_counter() - t0
-    return SearchResult(False, [], explored_nodes, 0.0, expanded, dt)
-
-
-def a_star(
-    hmap: np.ndarray,
-    start: Node,
-    goal: Node,
-    max_slope: float,
-    heuristic: Callable[[Node, Node], float] = h_euclidean
-) -> SearchResult:
-    t0 = time.perf_counter()
-    if not is_valid_cell(hmap, start.r, start.c) or not is_valid_cell(hmap, goal.r, goal.c):
-        return SearchResult(False, [], [], 0.0, 0, 0.0)
-
-    g: Dict[Node, float] = {start: 0.0}
-    came_from: Dict[Node, Node] = {}
-    pq = [(heuristic(start, goal), next(_counter), start)]  # (f, tie, node)
-    expanded = 0
-    closed = set()
-    explored_nodes: List[Node] = []
-
-    while pq:
-        f_u, _t, u = heapq.heappop(pq)
-        if u in closed:
-            continue
-        closed.add(u)
-        expanded += 1
-        explored_nodes.append(u)
-
-        if u == goal:
-            path = reconstruct(came_from, start, goal)
-            dt = time.perf_counter() - t0
-            return SearchResult(True, path, explored_nodes, g[u], expanded, dt)
-
-        for v, w in neighbors(hmap, u, max_slope):
-            if v in closed:
-                continue
-            ng = g[u] + w
-            if ng < g.get(v, float("inf")):
-                g[v] = ng
-                came_from[v] = u
-                heapq.heappush(pq, (ng + heuristic(v, goal), next(_counter), v))
-
-    dt = time.perf_counter() - t0
-    return SearchResult(False, [], explored_nodes, 0.0, expanded, dt)
-
-```
-
-```{python}
-# Visualización
-# ----------------------------
-def _nodes_xy(nodes: List[Node], nr: int, nc: int, scale: float = SCALE_M_PER_PX) -> Tuple[List[float], List[float]]:
-    xs, ys = [], []
-    for node in nodes:
-        x, y = rc_to_xy(node, nr, nc, scale)
-        xs.append(x)
-        ys.append(y)
-    return xs, ys
-
-
-def plot_aerial_path(
-    hmap: np.ndarray,
-    explored_nodes: List[Node],
-    path: List[Node],
-    start_xy: Tuple[float, float],
-    goal_xy: Tuple[float, float],
-    title: str,
-    scale: float = SCALE_M_PER_PX
-) -> None:
-    nr, nc = hmap.shape
-    terrain = np.flipud(np.where(hmap == INVALID_H, np.nan, hmap))
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    im = ax.imshow(
-        terrain,
-        cmap="gray",
-        origin="lower",
-        extent=[0, nc * scale, 0, nr * scale]
-    )
-    fig.colorbar(im, ax=ax, label="Altura (m)")
-
-    if explored_nodes:
-        ex, ey = _nodes_xy(explored_nodes, nr, nc, scale)
-        ax.scatter(ex, ey, s=4, c="#cf2fa5", alpha=0.35, linewidths=0, label="Explorados")
-
-    if path:
-        px, py = _nodes_xy(path, nr, nc, scale)
-        if px:
-            ax.plot(px, py, color="#22c7ff", linewidth=2.6, label="Ruta final")
-
-    ax.scatter([start_xy[0]], [start_xy[1]], c="green", s=60, marker="o", label="Inicio")
-    ax.scatter([goal_xy[0]], [goal_xy[1]], c="red", s=70, marker="o", label="Meta")
-
-    ax.set_title(title)
-    ax.set_xlabel("x (m)")
-    ax.set_ylabel("y (m)")
-    ax.legend(loc="upper right")
-    plt.tight_layout()
-    plt.show()
-```
-
-```{python}
-# Experimentos solicitados
-# ----------------------------
-def run_case(hmap: np.ndarray, start_xy: Tuple[float, float], goal_xy: Tuple[float, float], max_slope: float) -> None:
-    nr, nc = hmap.shape
-    start = xy_to_rc(start_xy[0], start_xy[1], nr, nc)
-    goal = xy_to_rc(goal_xy[0], goal_xy[1], nr, nc)
-
-    print(f"\nStart (x,y)={start_xy} -> (r,c)=({start.r},{start.c})")
-    print(f"Goal  (x,y)={goal_xy}  -> (r,c)=({goal.r},{goal.c})")
-    print(f"max_slope={max_slope} m")
-
-    for name, algo in [
-        ("BFS", lambda: bfs(hmap, start, goal, max_slope)),
-        ("Dijkstra", lambda: dijkstra(hmap, start, goal, max_slope)),
-        ("A*", lambda: a_star(hmap, start, goal, max_slope, heuristic=h_euclidean)),
-    ]:
-        res = algo()
-        print(
-            f"{name:8} found={res.found}  dist_m={res.distance_m:10.2f}  "
-            f"expanded={res.expanded:8d}  time_s={res.time_s:7.3f}  path_len={len(res.path)}"
-        )
-        plot_aerial_path(
-            hmap,
-            res.explored_nodes,
-            res.path,
-            start_xy,
-            goal_xy,
-            title=f"Vista aérea - {name} (caso obligatorio)"
-        )
-
-
-def pick_pairs_by_distance(
-    pairs: List[Tuple[Tuple[float, float], Tuple[float, float]]],
-    min_m: float,
-    max_m: float
-) -> List[Tuple[Tuple[float, float], Tuple[float, float], float]]:
-    out = []
-    for (sx, sy), (gx, gy) in pairs:
-        d = math.sqrt((gx - sx) ** 2 + (gy - sy) ** 2)
-        if (d >= min_m) and (d <= max_m):
-            out.append(((sx, sy), (gx, gy), d))
-    return out
-
-
-def evaluate_all_algorithms(
-    hmap: np.ndarray,
-    start_xy: Tuple[float, float],
-    goal_xy: Tuple[float, float],
-    max_slope: float,
-    label: str
-) -> None:
-    nr, nc = hmap.shape
-    start = xy_to_rc(start_xy[0], start_xy[1], nr, nc)
-    goal = xy_to_rc(goal_xy[0], goal_xy[1], nr, nc)
-    straight = math.dist(start_xy, goal_xy)
-    for algo_name, algo_fn in [
-        ("BFS", lambda hm, s, g, ms: bfs(hm, s, g, ms)),
-        ("Dijkstra", lambda hm, s, g, ms: dijkstra(hm, s, g, ms)),
-        ("A*", lambda hm, s, g, ms: a_star(hm, s, g, ms, heuristic=h_euclidean)),
-    ]:
-        res = algo_fn(hmap, start, goal, max_slope)
-        print(
-            f"{label:14} {algo_name:8} straight_m={straight:9.1f}  found={res.found}  "
-            f"dist_m={res.distance_m:10.1f}  expanded={res.expanded:8d}  time_s={res.time_s:7.3f}"
-        )
-        plot_aerial_path(
-            hmap,
-            res.explored_nodes,
-            res.path,
-            start_xy,
-            goal_xy,
-            title=f"Vista aérea - {algo_name} | {label} | d={straight:.1f} m"
-        )
-
-
-def benchmark_algorithm(
-    hmap: np.ndarray,
-    test_pairs: List[Tuple[Tuple[float, float], Tuple[float, float]]],
-    max_slope: float,
-    label: str
-) -> None:
-    nr, nc = hmap.shape
-    print(f"\n=== Benchmark todos los algoritmos | {label} | max_slope={max_slope} ===")
-    for start_xy, goal_xy in test_pairs:
-        start = xy_to_rc(start_xy[0], start_xy[1], nr, nc)
-        goal = xy_to_rc(goal_xy[0], goal_xy[1], nr, nc)
-        if not in_bounds(start.r, start.c, nr, nc) or not in_bounds(goal.r, goal.c, nr, nc):
-            print(
-                f"straight_m={math.dist(start_xy, goal_xy):9.1f}  skipped=True  "
-                f"reason=out_of_bounds start=({start.r},{start.c}) goal=({goal.r},{goal.c})"
-            )
-            continue
-        evaluate_all_algorithms(hmap, start_xy, goal_xy, max_slope, label)
-
-```
-
-```{python}
-# Main
-# ----------------------------
-def main():
-    # Caso obligatorio del enunciado:
-    run_case(
-        mars_map,
-        start_xy=(2850.0, 6400.0),
-        goal_xy=(3150.0, 6800.0),
-        max_slope=0.25
-    )
-
-    # Rendimiento: define tus parejas (x,y) en metros.
-    # Consejo: si eliges puntos en zonas con muchos -1, fallará rápido.
-    candidate_pairs = [
-        ((2000.0, 6000.0), (2400.0, 6100.0)),  # ~412 m
-        ((2600.0, 6500.0), (3000.0, 6700.0)),  # ~447 m
-        ((1000.0, 5000.0), (3000.0, 6500.0)),  # ~2500 m
-        ((1500.0, 4500.0), (5500.0, 6500.0)),  # ~4472 m
-        ((500.0, 500.0), (7000.0, 13000.0)),   # > 10km (válido en mapa)
-        ((500.0, 14000.0), (7300.0, 2000.0)),  # > 10km (válido en mapa)
-    ]
-
-    # Filtra por rangos (usa tus propias parejas si quieres control total)
-    short = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 0.0, 500.0)]
-    mid = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 1000.0, 5000.0)]
-    long = [p[:2] for p in pick_pairs_by_distance(candidate_pairs, 10000.0, 1e12)]
-
-    benchmark_algorithm(mars_map, short, 0.25, "short <=500m")
-    benchmark_algorithm(mars_map, mid, 0.25, "mid 1-5km")
-    benchmark_algorithm(mars_map, long, 0.25, "long >10km")
-```
-
-```{python}
-# Run
-main()
-
+plt.figure(figsize=(8, 6))
+reached_mask = np.array([[cell is not None for cell in row] for row in reached])
+plt.imshow(np.ma.masked_where(~reached_mask, mars_map), cmap='viridis', alpha=0.6)
+plt.imshow(mars_map, cmap='gray', interpolation='none')  # origin='upper' por default
+plt.scatter(END_C, END_R, color='red', s=50)
+plt.scatter(START_C, START_R, color='lime', s=50)
+plt.show()
 ```

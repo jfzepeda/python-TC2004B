@@ -78,16 +78,28 @@ print(coords_to_rows(y_f, x_f))
 ## Fase II: Constraits
 ```{python}
 ## Fase II: Constraits
-MAX_HEIGHT_DIFF = 0.25
 SCALE_M_PER_PX = 10.0174
 INVALID_H = -1.0
 HMAP = mars_map
+MAX_HEIGHT_DIFF = 0.25
+
+def setMaxDeltaH(nmdh):
+  global max_delta_h
+  max_delta_h = nmdh
+setMaxDeltaH(MAX_HEIGHT_DIFF)
 
 START_X = 2850 
 START_Y = 6400
 
 END_X = 3150
 END_Y = 6800
+
+def setStartEnd(start_x, start_y, end_x, end_y):
+  global START_X, START_Y, END_X, END_Y
+  START_X = start_x
+  START_Y = start_y
+  END_X = end_x
+  END_Y = end_y
 
 # Initial Matrix states
 
@@ -127,7 +139,11 @@ class SearchResult:
     expanded: int
     time_s: float
 
-def calcHeur(r, c, tx = END_X, ty = END_Y):
+def calcHeur(r, c, tx=None, ty=None):
+  if tx is None:
+    tx = END_X
+  if ty is None:
+    ty = END_Y
   x, y = rows_to_coords(r,c)
   delta_x = math.fabs(x - tx)
   delta_y = math.fabs(y - ty)
@@ -159,7 +175,7 @@ def isValidNeighbour(curr_nodo: Node, new_nodo: Node, step_cost: float):
 
   # Regla de la actividad: diferencia de alturas menor a 0.25 m.
   height_diff = math.fabs(new_nodo.height - curr_nodo.height)
-  if height_diff >= MAX_HEIGHT_DIFF:
+  if height_diff >= max_delta_h:
     return False
 
   return True
@@ -281,12 +297,12 @@ def path_length_m(route: List[Node]):
 
 def path_stats(route: List[Node]):
   if len(route) < 2:
-    return {'steps': 0, 'turns': 0, 'diag_steps': 0, 'axis_steps': 0, 'max_height_diff': 0.0}
+    return {'steps': 0, 'turns': 0, 'diag_steps': 0, 'axis_steps': 0, 'max_delta_h': 0.0}
 
   turns = 0
   diag_steps = 0
   axis_steps = 0
-  max_height_diff = 0.0
+  max_delta_h = 0.0
   prev_dir = None
 
   for a, b in zip(route, route[1:]):
@@ -304,14 +320,14 @@ def path_stats(route: List[Node]):
       axis_steps += 1
 
     dh = edge_height_diff(a, b)
-    max_height_diff = max(max_height_diff, dh)
+    max_delta_h = max(max_delta_h, dh)
 
   return {
       'steps': len(route) - 1,
       'turns': turns,
       'diag_steps': diag_steps,
       'axis_steps': axis_steps,
-      'max_height_diff': max_height_diff
+      'max_delta_h': max_delta_h
   }
 
 
@@ -415,8 +431,7 @@ def bfs_search():
       if frontier[nn.row][nn.col] is not None:
         continue
 
-      # BFS: cada movimiento cuenta como 1 paso.
-      child = Node(nn.row, nn.col, nn.height, nn.heur, curr.cost + 1.0, curr)
+      child = Node(nn.row, nn.col, nn.height, nn.heur, nn.cost, curr)
       frontier[child.row][child.col] = child
       q.append(child)
 
@@ -513,40 +528,67 @@ def astar_search():
 
 ## Fase V: Ejecución y comparación
 ```{python}
-res_bfs = bfs_search()
-res_dij = dijkstra_search()
-res_ast = astar_search()
+def showResults(res_bfs, res_dij, res_ast, plot):
+  plot_arry = []
+  if res_bfs:
+    plot_arry.append(('BFS', res_bfs))
+    print('BFS:')
+    print(f'  Encontrado: {res_bfs.found}')
+    print(f'  Nodos expandidos: {res_bfs.expanded}')
+    print(f'  Distancia estimada [m]: {res_bfs.distance_m:.2f}')
+    print(f'  Tiempo [s]: {res_bfs.time_s:.4f}')
+    if res_bfs.found:
+      stats = path_stats(res_bfs.path)
+      print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_delta_h"]:.4f} m')
 
-print('BFS:')
-print(f'  Encontrado: {res_bfs.found}')
-print(f'  Nodos expandidos: {res_bfs.expanded}')
-print(f'  Distancia estimada [m]: {res_bfs.distance_m:.2f}')
-print(f'  Tiempo [s]: {res_bfs.time_s:.4f}')
-if res_bfs.found:
-  stats = path_stats(res_bfs.path)
-  print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_height_diff"]:.4f} m')
+  if res_dij:
+    plot_arry.append(('Dijkstra', res_dij))
+    print('\nDijkstra:')
+    print(f'  Encontrado: {res_dij.found}')
+    print(f'  Nodos expandidos: {res_dij.expanded}')
+    print(f'  Distancia estimada [m]: {res_dij.distance_m:.2f}')
+    print(f'  Tiempo [s]: {res_dij.time_s:.4f}')
+    if res_dij.found:
+      stats = path_stats(res_dij.path)
+      print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_delta_h"]:.4f} m')
 
-print('\nDijkstra:')
-print(f'  Encontrado: {res_dij.found}')
-print(f'  Nodos expandidos: {res_dij.expanded}')
-print(f'  Distancia estimada [m]: {res_dij.distance_m:.2f}')
-print(f'  Tiempo [s]: {res_dij.time_s:.4f}')
-if res_dij.found:
-  stats = path_stats(res_dij.path)
-  print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_height_diff"]:.4f} m')
+  if res_ast:
+    plot_arry.append(('A*', res_ast))
+    print('\nA*:')
+    print(f'  Encontrado: {res_ast.found}')
+    print(f'  Nodos expandidos: {res_ast.expanded}')
+    print(f'  Distancia estimada [m]: {res_ast.distance_m:.2f}')
+    print(f'  Tiempo [s]: {res_ast.time_s:.4f}')
+    if res_ast.found:
+      stats = path_stats(res_ast.path)
+      print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_delta_h"]:.4f} m')
 
-print('\nA*:')
-print(f'  Encontrado: {res_ast.found}')
-print(f'  Nodos expandidos: {res_ast.expanded}')
-print(f'  Distancia estimada [m]: {res_ast.distance_m:.2f}')
-print(f'  Tiempo [s]: {res_ast.time_s:.4f}')
-if res_ast.found:
-  stats = path_stats(res_ast.path)
-  print(f'  Pasos: {stats["steps"]}, giros: {stats["turns"]}, diagonales: {stats["diag_steps"]}, rectos: {stats["axis_steps"]}, Δaltura máx: {stats["max_height_diff"]:.4f} m')
+  if plot:
+    plot_three_results(plot_arry)
 
-plot_three_results([
-  ('BFS', res_bfs),
-  ('Dijkstra', res_dij),
-  ('A*', res_ast),
-])
+def main(start_x=2850, start_y=6400, end_x=3150, end_y=6800, max_dh=0.25):
+  setStartEnd(start_x, start_y, end_x, end_y)
+  setMaxDeltaH(max_dh)
+  res_bfs, res_dij, res_ast, plot = None, None, None, False
+  plot = True
+  res_bfs = bfs_search()
+  res_dij = dijkstra_search()
+  res_ast = astar_search()
+  showResults(res_bfs, res_dij, res_ast, plot)
+
+cases = [
+  ("T1-A", 3000, 7000, 3300,  7400),
+  ("T1-B", 3500, 2000, 3250,  2350),
+  ("T2-A", 2000, 5000, 3500,  7000),
+  ("T2-B", 4000,10000, 5500, 14000),
+  ("T3-A", 4500, 2400, 1000, 13500),
+  ("T3-B", 3700,  500, 4500, 15500),
+]
+
+print("\n===", 'Main case', "===")
+main()
+
+for name, sx, sy, ex, ey in cases:
+  print("\n===", name, "===")
+  main(start_x=sx, start_y=sy, end_x=ex, end_y=ey, max_dh=0.25)
 ```

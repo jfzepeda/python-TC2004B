@@ -436,6 +436,81 @@ feature_selector.fit(
 ```
 
 ```{python}
+# Gráfica del peso/importancia de variables según BorutaShap
+
+plotted = False
+try:
+    feature_selector.plot(which_features="all")
+    plt.title("Peso de variables - BorutaShap")
+    plt.tight_layout()
+    plt.show()
+    plotted = True
+except TypeError:
+    try:
+        feature_selector.plot()
+        plt.title("Peso de variables - BorutaShap")
+        plt.tight_layout()
+        plt.show()
+        plotted = True
+    except Exception:
+        plotted = False
+except Exception:
+    plotted = False
+
+if not plotted:
+    # Fallback: construimos pesos con el historial de importancias disponible
+    importance_source = None
+    for attr in [
+        "history_x",
+        "importance_history_",
+        "importance_values_",
+        "feature_importances_",
+    ]:
+        if hasattr(feature_selector, attr):
+            importance_source = getattr(feature_selector, attr)
+            break
+
+    if importance_source is None:
+        raise RuntimeError(
+            "No se encontró historial de importancias en feature_selector para graficar."
+        )
+
+    if isinstance(importance_source, pd.DataFrame):
+        if {"Feature", "Importance"}.issubset(importance_source.columns):
+            weights = (
+                importance_source.groupby("Feature")["Importance"]
+                .mean()
+                .sort_values(ascending=False)
+            )
+        else:
+            weights = importance_source.mean(axis=0).sort_values(ascending=False)
+    else:
+        arr = np.asarray(importance_source)
+        if arr.ndim == 1:
+            if arr.shape[0] != X_train_prepared.shape[1]:
+                raise RuntimeError("No se pudo alinear importancias con las variables.")
+            weights = pd.Series(arr, index=X_train_prepared.columns).sort_values(ascending=False)
+        elif arr.ndim == 2:
+            if arr.shape[1] == X_train_prepared.shape[1]:
+                weights = pd.Series(np.nanmean(arr, axis=0), index=X_train_prepared.columns).sort_values(ascending=False)
+            elif arr.shape[0] == X_train_prepared.shape[1]:
+                weights = pd.Series(np.nanmean(arr, axis=1), index=X_train_prepared.columns).sort_values(ascending=False)
+            else:
+                raise RuntimeError("No se pudo alinear historial de importancias con las variables.")
+        else:
+            raise RuntimeError("Formato no soportado para historial de importancias.")
+
+    top_n = min(20, len(weights))
+    plt.figure(figsize=(9, 6))
+    sns.barplot(x=weights.head(top_n).values, y=weights.head(top_n).index, orient="h")
+    plt.title(f"Top {top_n} pesos de variables (BorutaShap)")
+    plt.xlabel("Peso promedio")
+    plt.ylabel("Variable")
+    plt.tight_layout()
+    plt.show()
+```
+
+```{python}
 # Variables aceptadas por BorutaShap
 
 selected_features = feature_selector.accepted
@@ -521,6 +596,35 @@ pred_sample = pd.DataFrame(
     }
 )
 pred_sample
+```
+
+## Fase VII: Pipeline
+```{python}
+lm = make_pipeline(
+    preprocessing,
+    LinearRegression())
+```
+
+```{python}
+lm.fit(X_train, y_train)
+```
+
+```{python}
+x_tilde = pd.DataFrame(
+    {
+        "beds": [3],
+        "baths": [2],
+        "sqft": [500],
+        "type": ["Residential"],
+        "latitude": [39],
+        "longitude": [-120],
+    }
+)
+```
+
+```{python}
+lm.predict(x_tilde)
+
 ```
 
 ## Conclusiones

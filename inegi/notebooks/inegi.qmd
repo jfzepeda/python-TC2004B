@@ -1,0 +1,187 @@
+---
+title: "Data cleaning pipeline"
+format:
+  html:
+    output-file: "cleaning.html"
+    toc: true
+    html-math-method: katex
+    embed-resources: true
+    self-contained-math: true
+    df-print: kable
+---
+
+## Entendimiento del negocio
+
+**Objetivo**: Estimar precios de viviendas en Sacramento con un pipeline reproducible de ciencia de datos.
+
+![](../figures/vivienda.jpeg){fig-align='center' width='300'}
+
+## Fase I: Importación de datos
+```{python}
+# 1: Importación de librerías
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import sparse
+import sklearn
+import altair as alt
+
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.compose import ColumnTransformer, make_column_selector, make_column_transformer
+from sklearn.pipeline import make_pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+```
+
+```{python}
+# 2: Importación de datos
+df = pd.read_csv('../data/inegi.csv', encoding='latin-1', low_memory=False, skiprows=1)
+%run ../scripts/data_cleaner.py
+```
+
+## Fase II: Feature selection
+```{python}
+# 1: Feature selection
+df.head()
+```
+
+```{python}
+# 2: Describe
+df.describe()
+```
+
+```{python}
+# 3: Identificar columnas numéricas y categóricas
+numeric_cols = df.select_dtypes(exclude=np.number).columns.tolist()
+categorical_cols = df.select_dtypes(include=np.number).columns.tolist()
+```
+
+```{python}
+# 4: Media aritmética de columnas numéricas
+for col in numeric_cols:
+    mean_value = df[col].mean()
+    print(f"Media de {col}: {mean_value}")
+```
+
+```{python}
+# 2: Data cleaning
+config = CleanerConfig(
+    missing_threshold=0.4,           # Elimina cols con >40% nulos
+    fill_numeric_strategy="mean",    # Imputa numéricos con media
+    fill_categorical_strategy="unknown",
+    remove_outliers=True,
+    outlier_method="zscore",         # O "iqr"
+    drop_columns=["id", "temp_col"],
+    rename_columns={"col_vieja": "col_nueva"},
+)
+cleaner = DataCleaner(config=config)
+
+cleaner.save(df_clean, "../data/inegi_limpio.csv")
+cleaner.print_report()
+```
+
+# x: xxxxxxs
+```{python}
+# Separar totalizadores de localidades reales
+df_loc = df[df['NOM_LOC'] != 'Total de la Entidad']
+df_loc = df_loc[df_loc['NOM_LOC'] != 'Total del Municipio']
+df_loc = df_loc[df_loc['NOM_LOC'] != 'Estados Unidos Mexicanos']
+
+# Convertir a numérico las variables cuantitativas
+vars_num = ['POBTOT', 'POBFEM', 'POBMAS', 'GRAPROES', 'GRAPROES_F', 
+            'GRAPROES_M', 'PEA', 'PSINDER', 'VPH_PISOTI']
+for col in vars_num:
+    df_loc[col] = pd.to_numeric(df_loc[col], errors='coerce')
+
+# Variables derivadas clave
+df_loc['tasa_analfab'] = df_loc['P15YM_AN'] / df_loc['P_15YMAS'].replace(0, np.nan)
+df_loc['tasa_desocup'] = df_loc['PDESOCUP'] / df_loc['PEA'].replace(0, np.nan)
+df_loc['brecha_escolar'] = df_loc['GRAPROES_M'] - df_loc['GRAPROES_F']
+df_loc['pct_sin_salud'] = df_loc['PSINDER'] / df_loc['POBTOT'].replace(0, np.nan)
+df_loc['pct_piso_tierra'] = df_loc['VPH_PISOTI'] / df_loc['VIVPARH_CV'].replace(0, np.nan)
+```
+
+```{python}
+# Definir grupos de edad basado en tus columnas
+
+age_groups = [
+    ("0-4", "P_0A4_F", "P_0A4_M"),
+    ("5-9", "P_5A9_F", "P_5A9_M"),
+    ("10-14", "P_10A14_F", "P_10A14_M"),
+    ("15-19", "P_15A19_F", "P_15A19_M"),
+    ("20-24", "P_20A24_F", "P_20A24_M"),
+    ("25-29", "P_25A29_F", "P_25A29_M"),
+    ("30-34", "P_30A34_F", "P_30A34_M"),
+    ("35-39", "P_35A39_F", "P_35A39_M"),
+    ("40-44", "P_40A44_F", "P_40A44_M"),
+    ("45-49", "P_45A49_F", "P_45A49_M"),
+    ("50-54", "P_50A54_F", "P_50A54_M"),
+    ("55-59", "P_55A59_F", "P_55A59_M"),
+    ("60-64", "P_60A64_F", "P_60A64_M"),
+    ("65-69", "P_65A69_F", "P_65A69_M"),
+    ("70-74", "P_70A74_F", "P_70A74_M"),
+    ("75-79", "P_75A79_F", "P_75A79_M"),
+    ("80-84", "P_80A84_F", "P_80A84_M"),
+    ("85+", "P_85YMAS_F", "P_85YMAS_M"),
+]
+
+# Convertir columnas de población a números
+pop_cols = [col for age, col_f, col_m in age_groups for col in [col_f, col_m]]
+for col in pop_cols:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+# Preparar datos para la pirámide
+pyramid_data = []
+
+for age, col_f, col_m in age_groups:
+    # Sumar por fila para cada grupo de edad
+    female_pop = df[col_f].sum()
+    male_pop = df[col_m].sum()
+    
+    # Agregar datos de mujeres (valores negativos para el lado izquierdo)
+    pyramid_data.append({
+        "Grupo de Edad": age,
+        "Población": -female_pop,
+        "Sexo": "Mujer"
+    })
+    
+    # Agregar datos de hombres (valores positivos para el lado derecho)
+    pyramid_data.append({
+        "Grupo de Edad": age,
+        "Población": male_pop,
+        "Sexo": "Hombre"
+    })
+
+pyramid_df = pd.DataFrame(pyramid_data)
+pyramid_df["Población_abs"] = pyramid_df["Población"].abs()
+
+# Crear pirámide poblacional con Altair
+base = alt.Chart(pyramid_df).encode(
+    y=alt.Y("Grupo de Edad:N", axis=alt.Axis(title="Grupo de Edad"), sort=[age for age, _, _ in age_groups][::-1]),
+    color=alt.Color("Sexo:N", scale=alt.Scale(domain=["Mujer", "Hombre"], range=["#FF69B4", "#4169E1"]))
+)
+
+bars = base.mark_bar().encode(
+    x=alt.X("Población:Q", axis=alt.Axis(title="Población", labelExpr="abs(datum.value)")),
+    tooltip=["Grupo de Edad:N", "Sexo:N", alt.Tooltip("Población_abs:Q", title="Población", format=",")]
+)
+
+pyramid = bars.properties(
+    width=300,
+    height=200,
+    title="Pirámide Poblacional"
+).interactive()
+
+pyramid
+
+```
+
+## Fase III: Feature engineering
+## Fase IV: Feature training
+## Fase V: Fine tunning
+## Fase VI: Results
+

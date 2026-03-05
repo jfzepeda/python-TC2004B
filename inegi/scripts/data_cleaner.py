@@ -398,7 +398,7 @@ class DataCleaner:
 # ─────────────────────────────────────────────
 # EJECUCIÓN DIRECTA (CLI SIMPLE)
 # ─────────────────────────────────────────────
-if __name__ == "__main__":
+if __name__ == "__main__" and False:
     import sys
 
     if len(sys.argv) < 2:

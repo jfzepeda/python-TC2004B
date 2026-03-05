@@ -6,3 +6,9 @@
 2026-02-28 11:23:58,752 [INFO] [OP] remove_outliers: 446 filas eliminadas (iqr)
 2026-02-28 11:23:58,752 [INFO] Limpieza completada en 0.03s → (484, 9)
 2026-02-28 11:23:58,755 [INFO] Dataset guardado: ../data/dataset_limpio.csv
+2026-03-05 10:21:24,505 [INFO] [OP] strip_whitespace: 279 columnas procesadas
+2026-03-05 10:21:24,532 [INFO] [OP] handle_missing: Numérico: mean | Categórico: unknown
+2026-03-05 10:21:24,621 [INFO] [OP] normalize_strings: 279 columnas normalizadas
+2026-03-05 10:21:24,641 [INFO] [OP] remove_outliers: 120 filas eliminadas (zscore)
+2026-03-05 10:21:24,643 [INFO] Limpieza completada en 0.23s → (1937, 286)
+2026-03-05 10:21:24,693 [INFO] Dataset guardado: ../data/inegi_limpio.csv
